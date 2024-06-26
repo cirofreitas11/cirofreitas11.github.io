@@ -12,14 +12,12 @@
       var iframe = document.querySelector('iframe');
       if (iframe) {
         iframe.onload = function() {
-          var emailField = iframe.contentWindow.document.querySelector('input[aria-labelledby="i134"]'); // Substitua pelo atributo correto do campo de email
-          if (emailField) {
-            var email = getQueryParam('email');
-            if (email) {
+          var email = getQueryParam('email');
+          if (email) {
+            // Encontrar o input de email no formulário dentro do iframe
+            var emailField = iframe.contentWindow.document.querySelector('input[aria-labelledby="i134"]');
+            if (emailField) {
               emailField.value = email;
-              emailField.readOnly = true;
-              emailField.style.color = 'transparent';
-              emailField.style.pointerEvents = 'none';
             }
           }
         };
