@@ -3,35 +3,38 @@
 <head>
   <title>Pesquisa</title>
   <script>
+    function redirectToForm() {
+      var email = getQueryParam('email');
+      if (email) {
+        // Modifique o link do Google Forms com o email capturado
+        var formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScO8E5sOqTITcTgrVF2TQNK11K-x31ks4bu6TS5-7L6VoI-eg/viewform?usp=pp_url';
+
+        // Encontrar o campo de entrada correto usando o aria-labelledby
+        var emailField = document.querySelector('[aria-labelledby="i134"]');
+        
+        // Verificar se encontrou o campo de email
+        if (emailField) {
+          // Obter o ID específico do campo de email no formulário do Google Forms
+          var entryId = emailField.getAttribute('aria-labelledby').replace('i', '');
+          
+          // Redirecionar para o formulário com o email preenchido
+          window.location.href = formUrl + '&entry.' + entryId + '=' + encodeURIComponent(email);
+        } else {
+          console.error('Campo de email não encontrado.');
+        }
+      } else {
+        console.error('Email não encontrado na URL.');
+      }
+    }
+
     function getQueryParam(param) {
       var urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(param) || getQueryParameterByName(param, window.location.href);
+      return urlParams.get(param) || '';
     }
 
-    function getQueryParameterByName(name, url) {
-      name = name.replace(/[[]]/g, "\\$&");
-      var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-          results = regex.exec(url);
-      if (!results) return null;
-      if (!results[2]) return '';
-      return decodeURIComponent(results[2].replace(/\+/g, " "));
-    }
-
+    // Redirecionar para o formulário ao carregar a página
     document.addEventListener('DOMContentLoaded', function() {
-      var iframe = document.querySelector('iframe');
-      if (iframe) {
-        iframe.onload = function() {
-          var email = getQueryParam('email');
-          console.log('Email capturado:', email); // Imprime o email capturado no console
-          if (email) {
-            // Encontrar o input de email dentro do formulário dentro do iframe
-            var emailField = iframe.contentWindow.document.querySelector('.Xb9hP input[type="text"]');
-            if (emailField) {
-              emailField.value = email;
-            }
-          }
-        };
-      }
+      redirectToForm();
     });
   </script>
 </head>
@@ -47,7 +50,6 @@
   }
 </style>
 <body>
-  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScO8E5sOqTITcTgrVF2TQNK11K-x31ks4bu6TS5-7L6VoI-eg/viewform?usp=pp_url"></iframe>
 </body>
 </html>
 
