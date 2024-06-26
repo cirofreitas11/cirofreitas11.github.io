@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pesquisa</title>
+  <script>
+    function getQueryParam(param) {
+      var urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var iframe = document.querySelector('iframe');
+      if (iframe) {
+        iframe.onload = function() {
+          var emailField = iframe.contentWindow.document.querySelector('input[aria-labelledby="i134"]'); // Substitua pelo atributo correto do campo de email
+          if (emailField) {
+            var email = getQueryParam('email');
+            if (email) {
+              emailField.value = email;
+              emailField.readOnly = true;
+              emailField.style.color = 'transparent';
+              emailField.style.pointerEvents = 'none';
+            }
+          }
+        };
+      }
+    });
+  </script>
+</head>
+<body>
+  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScO8E5sOqTITcTgrVF2TQNK11K-x31ks4bu6TS5-7L6VoI-eg/viewform?usp=pp_url" width="100%" height="1000" frameborder="0" marginheight="0" marginwidth="0">Carregando…</iframe>
+</body>
+</html>
