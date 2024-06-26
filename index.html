@@ -3,7 +3,7 @@
 <head>
   <title>Pesquisa</title>
   <script>
-    function checkEmailInURL() {
+   function checkEmailInURL() {
         var email = getQueryParam('email');
         console.log('Email encontrado na URL:', email);
 
@@ -14,37 +14,15 @@
         }
     }
 
-    function loadGoogleForm() {
-        var formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScO8E5sOqTITcTgrVF2TQNK11K-x31ks4bu6TS5-7L6VoI-eg/viewform?usp=pp_url';
-        window.open(formUrl, '_blank');
-    }
-
-    function findEmailField() {
-        var emailField = document.querySelector('[aria-labelledby="i134"]');
-        console.log('Campo de email encontrado:', emailField);
-        if (emailField) {
-            var entryId = emailField.getAttribute('aria-labelledby').replace('i', '');
-            console.log('ID do campo de email:', entryId);
-        } else {
-            console.error('Campo de email não encontrado.');
-        }
-    }
-
     function getQueryParam(param) {
         var urlParams = new URLSearchParams(window.location.search);
         return urlParams.get(param) || '';
     }
 
-    // Carregar o formulário ao carregar a página
+    // Verificar o email na URL ao carregar a página
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('Carregando o formulário do Google Forms...');
-        loadGoogleForm();
-
-        // Após um pequeno intervalo para o formulário carregar, verificar o campo de email
-        setTimeout(function() {
-            console.log('Procurando campo de email no formulário...');
-            findEmailField();
-        }, 8000); // Ajuste o tempo conforme necessário para garantir que o formulário esteja carregado
+        console.log('Verificando email na URL...');
+        checkEmailInURL();
     });
 </script>
 </head>
