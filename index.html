@@ -3,15 +3,36 @@
 <head>
   <title>Pesquisa</title>
   <script>
-   function checkEmailInURL() {
+    function redirectToForm() {
         var email = getQueryParam('email');
         console.log('Email encontrado na URL:', email);
 
         if (email) {
-            console.log('Email encontrado:', email);
+            var formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScO8E5sOqTITcTgrVF2TQNK11K-x31ks4bu6TS5-7L6VoI-eg/viewform?usp=pp_url';
+
+            // Encontrar o campo de entrada correto usando o aria-labelledby
+            var emailField = findEmailField();
+            
+            if (emailField) {
+                // Obter o ID específico do campo de email no formulário do Google Forms
+                var entryId = emailField.getAttribute('aria-labelledby').replace('i', '');
+                
+                // Redirecionar para o formulário com o email preenchido
+                var finalUrl = formUrl + '&entry.' + entryId + '=' + encodeURIComponent(email);
+                console.log('Redirecionando para:', finalUrl);
+                window.open(finalUrl, '_blank');
+            } else {
+                console.error('Campo de email não encontrado.');
+            }
         } else {
             console.error('Email não encontrado na URL.');
         }
+    }
+
+    function findEmailField() {
+        // Encontrar o campo de email pelo atributo aria-labelledby
+        var emailField = document.querySelector('[aria-labelledby="i134"]');
+        return emailField;
     }
 
     function getQueryParam(param) {
@@ -19,10 +40,10 @@
         return urlParams.get(param) || '';
     }
 
-    // Verificar o email na URL ao carregar a página
+    // Redirecionar para o formulário ao carregar a página
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('Verificando email na URL...');
-        checkEmailInURL();
+        console.log('Redirecionando para o formulário do Google Forms...');
+        redirectToForm();
     });
 </script>
 </head>
