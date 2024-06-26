@@ -23,7 +23,7 @@
         iframe.onload = function() {
           var email = getQueryParam('email');
           if (email) {
-            // Encontrar o input de email no formulário dentro do iframe
+            // Encontrar o input de email dentro do formulário dentro do iframe
             var emailField = iframe.contentWindow.document.querySelector('.Xb9hP input[type="text"]');
             if (emailField) {
               emailField.value = email;
@@ -44,8 +44,9 @@
     height: 100%;
     border: none;
   }
-</style>  
+</style>
 <body>
-  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScO8E5sOqTITcTgrVF2TQNK11K-x31ks4bu6TS5-7L6VoI-eg/viewform?usp=pp_url"</iframe>
+  <iframe src="https://docs.google.com/forms/d/e/FORM_ID/viewform?usp=pp_url"></iframe>
 </body>
 </html>
+
