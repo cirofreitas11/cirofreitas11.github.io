@@ -22,6 +22,7 @@
       if (iframe) {
         iframe.onload = function() {
           var email = getQueryParam('email');
+          console.log('Email capturado:', email); // Imprime o email capturado no console
           if (email) {
             // Encontrar o input de email dentro do formulário dentro do iframe
             var emailField = iframe.contentWindow.document.querySelector('.Xb9hP input[type="text"]');
