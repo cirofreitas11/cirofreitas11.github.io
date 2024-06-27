@@ -1,52 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <title>Pesquisa</title>
-  <script>
-    function redirectToForm() {
-        var email = getQueryParam('email');
-        console.log('Email encontrado na URL:', email);
-
-        if (email) {
-            var formUrl = 'https://docs.google.com/forms/d/e/1FAIpQLScO8E5sOqTITcTgrVF2TQNK11K-x31ks4bu6TS5-7L6VoI-eg/viewform?usp=pp_url';
-
-            // Encontrar o campo de entrada correto usando o aria-labelledby
-            var emailField = findEmailField();
-            
-            if (emailField) {
-                // Obter o ID específico do campo de email no formulário do Google Forms
-                var entryId = emailField.getAttribute('aria-labelledby').replace('i', '');
-                
-                // Redirecionar para o formulário com o email preenchido
-                var finalUrl = formUrl + '&entry.' + entryId + '=' + encodeURIComponent(email);
-                console.log('Redirecionando para:', finalUrl);
-                window.open(finalUrl, '_blank');
-            } else {
-                console.error('Campo de email não encontrado.');
-            }
-        } else {
-            console.error('Email não encontrado na URL.');
-        }
-    }
-
-    function findEmailField() {
-        // Encontrar o campo de email pelo atributo aria-labelledby
-        var emailField = document.querySelector('[aria-labelledby="i134"]');
-        return emailField;
-    }
-
-    function getQueryParam(param) {
-        var urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(param) || '';
-    }
-
-    // Redirecionar para o formulário ao carregar a página
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Redirecionando para o formulário do Google Forms...');
-        redirectToForm();
-    });
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integração Sendinblue com Google Forms</title>
 </head>
+
 <style>
   html, body {
     height: 100%;
@@ -58,7 +17,115 @@
     border: none;
   }
 </style>
+
 <body>
+
+<!-- Formulário do Google Forms incorporado via iframe -->
+<iframe id="formIframe" src="https://docs.google.com/forms/d/e/1FAIpQLScO8E5sOqTITcTgrVF2TQNK11K-x31ks4bu6TS5-7L6VoI-eg/viewform?embedded=true" width="640" height="600" frameborder="0" marginheight="0" marginwidth="0">Carregando…</iframe>
+
+<!-- Script para rastreamento de envio do formulário e atualização de atributos no Sendinblue -->
+<script type="text/javascript">
+(function() {
+    window.sib = {
+        equeue: [],
+        client_key: "z3kfaltdi06y3d31l98926l0"
+    };
+    window.sendinblue = {};
+    for (var j = ['track', 'identify', 'page'], i = 0; i < j.length; i++) {
+        (function(k) {
+            window.sendinblue[k] = function() {
+                var arg = Array.prototype.slice.call(arguments);
+                (window.sib[k] || function() {
+                        var t = {};
+                        t[k] = arg;
+                        window.sib.equeue.push(t);
+                    })(arg[0], arg[1], arg[2], arg[3]);
+            };
+        })(j[i]);
+    }
+
+    // Função para extrair o email do parâmetro da URL
+    function getEmailFromUrl() {
+        var urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('email');
+    }
+
+    // Função para rastrear o envio do formulário e atualizar o atributo do usuário
+    function trackFormSubmission(email) {
+        var formId = '1FAIpQLScO8E5sOqTITcTgrVF2TQNK11K-x31ks4bu6TS5-7L6VoI-eg'; // Substitua com o ID do formulário do Google Forms
+        var iframe = document.getElementById('formIframe');
+        var iframeWindow = iframe.contentWindow || iframe.contentDocument;
+
+        iframeWindow.document.getElementById(formId).addEventListener('submit', function(event) {
+            // Rastrear o envio do formulário
+            window.sendinblue.track('google_form_submission', { email: email });
+
+            // Atualizar o atributo do usuário após o envio do formulário
+            updateContactAttribute(email);
+        });
+    }
+
+    // Função para atualizar o atributo do usuário no Sendinblue
+    function updateContactAttribute(email) {
+        var apiKey = 'z3kfaltdi06y3d31l98926l0'; // Substitua com sua chave de API do Sendinblue
+        var apiEndpoint = 'https://api.sendinblue.com/v3/contacts';
+
+        // Configurar cabeçalhos
+        var headers = {
+            'Content-Type': 'application/json',
+            'api-key': apiKey
+        };
+
+        // Construir payload
+        var payload = {
+            'attributes': {
+                'RESPONDEU_QUESTIONARIO': 'Sim'
+            }
+        };
+
+        // Construir URL para atualizar o contato
+        var url = apiEndpoint + '?email=' + encodeURIComponent(email);
+
+        // Fazer a requisição à API para atualizar o atributo do contato
+        var options = {
+            'method': 'PUT',
+            'headers': headers,
+            'body': JSON.stringify(payload)
+        };
+
+        // Usar fetch API para atualizar o atributo do contato
+        fetch(url, options)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Atributo do usuário atualizado com sucesso:', data);
+            })
+            .catch(error => {
+                console.error('Erro ao atualizar atributo do usuário:', error);
+            });
+    }
+
+    var n = document.createElement("script"),
+        i = document.getElementsByTagName("script")[0];
+    n.type = "text/javascript";
+    n.id = "sendinblue-js";
+    n.async = true;
+    n.src = "https://sibautomation.com/sa.js?key=" + window.sib.client_key;
+    n.onload = function() {
+        // Chamar page() para rastrear a visualização inicial da página
+        window.sendinblue.page();
+
+        // Extrair o email da URL e rastrear o envio do formulário
+        var email = getEmailFromUrl();
+        if (email) {
+            trackFormSubmission(email);
+        }
+    };
+    i.parentNode.insertBefore(n, i);
+
+})();
+</script>
+
 </body>
 </html>
+
 
